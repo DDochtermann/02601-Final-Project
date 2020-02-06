@@ -1,0 +1,280 @@
+-------------------------------------------------------------
+--------------------------- v 1.0 ---------------------------
+-------------------------------------------------------------
+------- Converting dataset file to workable Go struct -------
+-------------------------------------------------------------
+
+ADDED STRUCT:
+	Pup
+
+ADDED FUNCTIONS:
+	GeneratePupMatrix
+	ReadFileLines
+	HeadersToLocusNames
+	GetNextPup
+
+NOTES:	
+* Modified input file requirements from comma to tab delimited
+as comma delimited line splitting broke the program when breed 
+names contained commas (ex: "Poodle, Standard)
+
+--------------------------- v 1.1 ---------------------------
+
+Notes:
+* Offloaded linesplitting from GeneratePupMatrix into 
+HeadersToLocusNames
+* Added general input/output comments to each function
+* Tested and verified succesful data conversion
+
+-------------------------------------------------------------
+--------------------------- v 2.0 ---------------------------
+-------------------------------------------------------------
+---------- Performing Principal Component Analysis ----------
+-------------------------------------------------------------
+
+ADDED TYPE:
+	DataMatrix
+
+ADDED FUNCTIONS:
+	Create2DMatrix
+	TransposeMatrix
+	MultiplyMatrix
+	DotProduct
+	SumArray
+	PrintMatrix
+	TruncateMatrix
+
+NOTES:
+* First PCA output generated but not yet visualized
+* GeneratePupMatrix modified to now flow into Create2DMatrix,
+now returning a DataMatrix instead of []Pup
+
+--------------------------- v 2.1 ---------------------------
+
+ADDED FUNCTIONS:
+	MatrixToCSV
+
+NOTES:
+* PCA output now plottable in excel via MatrixToCSV output, 
+demonstrating that normalization of the data is required 
+before processing
+* Added comments to all functions added after v 2.0
+
+--------------------------- v 2.2 ---------------------------
+
+ADDED FUNCTIONS:
+	PCA
+
+NOTES:
+* Moved PCA sub-function calls into a primary function PCA, to 
+simplify the code within main
+* PCA dimensions now taken as command line input
+* Simplified console outputs on input errors easier so they
+are easier to fix
+* Updated comments on GeneratePupMatrix to reflect the changes
+made in V 2.0
+
+--------------------------- v 2.3 ---------------------------
+
+ADDED FUNCTIONS:
+	NormalizeMatrix
+	GetNormVars
+	Normalize
+	
+NOTES: 
+* Tried normalizing values from -1 to 1 first, but had better
+results when normalizing around the avg and stdev
+* Commented all relevant functions, added normalization
+to the many calls PCA makes. Now capable of calling PCA
+on a cluster ouptut if attempted in future versions
+* Commented all functions
+
+-------------------------------------------------------------
+--------------------------- v 3.0 ---------------------------
+-------------------------------------------------------------
+-------- Applying Mean Shift Clustering to PCA Output -------
+-------------------------------------------------------------
+
+ADDED TYPE:
+	ClusterSet
+
+ADDED STRUCT:
+	Position
+
+ADDED FUNCTIONS:
+	CreateClusters
+	MeanShift
+	CleanUp
+	AvgPos
+	FindInRange
+	Pow10
+	MinMax
+	ClustersToCSV
+
+--------------------------- v 3.1 ---------------------------
+
+ADDED FUNCTIONS:
+	MeanShiftAndCluster
+	SplitToMatrices
+	Closest Cluster
+
+NOTES: 
+* Modified Cleanup to remove clusters that are practically 
+the same
+* Meanshift now returns the firstNonNull value, so cleanUp 
+can start with that rather than 0 arbitrarily
+* All above functions now called within MeanShiftAndCluster
+* Converted MeanShift to C method for memory conservation
+* Output clustered data to excel to plot and collect pngs for 
+visualization
+
+--------------------------- v 3.2 ---------------------------
+
+ADDED FUNCTIONS:
+	RecursiveBreakdown
+
+NOTES:
+* Now pass FinalTags alongside FinalSets to identify prior
+heirarchy for heirarchal clustering
+* Added function comments
+* Added ids to Pup type to identify for heirarchal clustering
+
+
+-------------------------------------------------------------
+--------------------------- v 4.0 ---------------------------
+-------------------------------------------------------------
+----------- Regrouping and Reorganizing for Output-----------
+-------------------------------------------------------------
+
+ADDED STRUCT:
+	TagInfo
+
+ADDED FUNCTIONS:
+	AHC
+	HeirarchalCluster
+	GetMaxDepth
+	GetSetsAtDepths
+	GetTagInfo
+	
+NOTES:
+* Currently functions simply group all input clusters based
+on their assigned depth from the recursive mean sort, to
+make sure that the new struct and all loops function right
+* Will be modified in future to return heirarchal data
+* Neglecting function comments for now as all of the
+above functions will likely change
+
+--------------------------- v 4.1 ---------------------------
+
+NOTES:
+* Verified a few more components with even more print
+statements to the console
+* Removed the rest of the print line checks throughout
+* Passed dims into AHC and HeirarchalCluster to allow
+for 3-Dimensional check
+
+--------------------------- v 4.2 ---------------------------
+
+ADDED GLOBAL VARIABLE:
+	NewickString
+
+ADDED STRUCT:
+	Node
+
+ADDED TYPE:
+	Tree
+
+ADDED FUNCTIONS:
+	PrintTreeToNewick
+	MakeAndPrintMaps
+	PrintOneMap
+	NewickToTXT
+	AddNode
+	
+NOTES:
+* Made use of Trees to store infomration on all clusters,
+including their roots and children
+* Made use of the Newick format for tree plotting via online
+tools
+* Realized that comma's are important in the Newick format, 
+so the original dataset was modified to remove them and 
+saved to DFNC.txt (DogFilerNoCommas)
+* Looking at that output brought to light a few things:
+* Pimarily that Heirarchal Clustering would possibly make
+sense to do if was performed on the Final Set of clusters, 
+running on each cluster and subclusters is pointless
+* This may be accurate, as STR repeats were inconsistent 
+across breeds in the source dataset
+
+-------------------------------------------------------------
+--------------------------- v 5.0 ---------------------------
+-------------------------------------------------------------
+------------------------ Cleaning Up ------------------------
+-------------------------------------------------------------
+
+REMOVED FUNCTION:
+	Pow10
+
+NOTES:
+* Removed the dimensions from the default list of command
+line arguments, as 3D will almost always return a better 
+result
+* Now "testmode" can be called in place of the filename,
+allowing for custom dimensions, output file, maximum
+cluster size used for PCA and clustering, and Newick outfile
+* Edited comments to better reflect updates, added comments
+where none previously existed
+* Moved functions around to better reflect call order
+
+-------------------------------------------------------------
+--------------------------- v 6.0 ---------------------------
+-------------------------------------------------------------
+------------- Implementing Heirarchal Clustering ------------
+-------------------------------------------------------------
+
+ADDED FUNCTIONS:
+	MakeStringForHCLabel
+	DMtoPos
+	GroupNodes
+	FindClosestClusters
+	CalcDistance
+	CalcScoreAndWeight
+
+NOTES:
+* Previous test outputs demonstrated the need for Heirarchal
+Clustering on the final sets returned from the algorithms
+utilized prior
+
+--------------------------- v 6.1 ---------------------------
+
+FUNCTIONS REMOVED:
+	AddNode
+	GetMaxDepth
+	GetSetsAtDepths
+	AHC
+	PrintMSTreeToNewick
+	MakeAndPrintMap
+	PrintOneMap
+	
+NOTES: 
+* Multiple functions and all associated variables, structs, 
+and datatypes used were removed where unneccessary
+* These functions were either used for test data output, or
+were previously intended for use in AHC, wherein more 
+efficient methods were found and utilized
+
+
+--------------------------- v 6.2 ---------------------------
+-------------------------- (Final) --------------------------
+
+NOTES:
+* Final pass of general organizational revision
+* Assured variable names were consistent and made sense
+* Added comments within functions where concepts may not
+be perfectly clear
+* Removed unneccesary newlines and commented out print
+statements used in previous iterations for verification
+* Modified print statements to console
+* Added a run complete messege at program completion
+
+-------------------------------------------------------------
